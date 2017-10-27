@@ -118,13 +118,18 @@ initialGuess=c(1,1,1)
 fit3=optim(par=initialGuess,fn=nllike,S=data1$S,u=data1$u)
 print(fit3)
 
+# P1 = max growth rate (umax) = 1.46
+# P2 = half-saturation constant = 42.6
+# P3 = -sigma squared = -3.13
+# sigma = 0.04
+
 #__________________________________________________________
 
 #Question 3
 
 decomp <- read.csv("/Users/elizabethfortin12/Documents/ND First Year/Biocomputing/R_Programming/Exercise_9/leafDecomp.csv")
 
-#Null model
+############## Null model
 nllnull <- function(p,d){
   a=p[1]
   sig=exp(p[2])
@@ -137,7 +142,11 @@ initialGuess <- c(500,1)
 null <- optim(par=initialGuess,fn=nllnull,d=decomp$decomp)
 null
 
-# Linear Model
+#### Results
+# a = 590
+# sigma = 164
+
+################ Linear Model
 
 nllike_linear=function(p,Ms,d){
   a=p[1]
@@ -150,13 +159,19 @@ nllike_linear=function(p,Ms,d){
   return(nll_linear)
 }
 
-initialGuess=c(1,1,1)
+initialGuess=c(500,1,1)
 fit_linear=optim(par=initialGuess,fn=nllike_linear,Ms=decomp$Ms,d=decomp$decomp)
 
 print(fit_linear)
 
+#### Results
 
-#Humpshaped model
+# a = 317
+# b = 6.3
+# sigma = 54
+
+################### Humpshaped model
+
 nllhump <- function(p,Ms,d){
   a=p[1]
   b=p[2]
@@ -167,11 +182,21 @@ nllhump <- function(p,Ms,d){
   return(nll)
 }
 
-initialGuess <- c(1,1,1,1)
+initialGuess <- c(200,10,1,1)
 hump <- optim(par=initialGuess,fn=nllhump,Ms=decomp$Ms,d=decomp$decomp)
 hump
 
-#likelihood ratio test
+### Results
+
+# a = 207
+# b = 15
+# c = -0.11
+# sigma = 20
+
+##### The linear model is better than the null model, but the hump 
+# shaped model is the best model for this data set.
+
+############# likelihood ratio test
 F<-2*(fit_linear$value-null$value)
 ratiotest3 <- pchisq(q=F, df=1, lower.tail=FALSE)
 ratiotest3
