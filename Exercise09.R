@@ -34,7 +34,7 @@ graph2a <- ggplot(df2, aes(x = S, y = u)) + geom_point() + theme_classic()
 nllike2 <- function(p, x, y){
   umax = p[1]
   Ks = p[2]
-  sigma = exp(p[3])
+  sigma = p[3] #Why is this different from in-class example?
   
   expected = umax*S/(S + Ks)
   
@@ -48,11 +48,19 @@ fit2 = optim(par = initialGuess, fn=nllike2, x = S, y = u)
 
 #Creating data to test the estimated parameters
 testx <- seq(0, 1000, length.out = 100)
-testy <- fit$par[1]*testx/(testx+fit$par[2])
+testy <- fit2$par[1]*testx/(testx+fit2$par[2])
 df2b <- data.frame(testx,testy)
 
 #Graphing the estimated model
 graph2b <- ggplot(df2b, aes(x = testx, y = testy)) + geom_point() + theme_classic()
 
+#Test Significance
 D2 <- 2*fit2$value
-pchisq(D2,df=1)
+P2 <- pchisq(D2,df=1)
+
+if (P2 < 0.05) {
+  cat("The parameter estimates Umax =", fit2$par[1], "and Ks =", fit2$par[2], "are significant. Sigma =", fit2$par[3])
+} else {
+  print("The parameter estimates were not significant")
+}
+
