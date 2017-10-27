@@ -94,10 +94,23 @@ initialGuess <- c(500,1)
 null <- optim(par=initialGuess,fn=nllnull,d=decomp$decomp)
 null
 
+# Linear Model
 
+nllike_linear=function(p,Ms,d){
+  a=p[1]
+  b=p[2]
+  sigma=exp(p[3])
+  
+  expected=a+b*Ms
+  
+  nll_linear=-sum(dnorm(x=d,mean=expected,sd=sigma,log=TRUE))
+  return(nll_linear)
+}
 
+initialGuess=c(1,1,1)
+fit_linear=optim(par=initialGuess,fn=nllike_linear,Ms=decomp$Ms,d=decomp$decomp)
 
-
+print(fit_linear)
 
 
 #Humpshaped model
