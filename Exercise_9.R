@@ -45,8 +45,37 @@ D<-2*(fit2$value - fit$value)
 ratiotest <- pchisq(q=D, df=1, lower.tail=FALSE)
 ratiotest
 
+#__________________________________________________________
 
+# Quesiton 2
 
+# Load Data
+
+data=read.csv("/Users/chelseaweibel/Desktop/Biocomputing/R.data/Biocomputing Exercise 9.Use/MmarinumGrowth.csv")
+
+# Custom Function
+
+nllike = function(p,S,u){
+  umax=p[1]
+  Ks=p[2]
+  sigma=exp(p[3])
+  
+  expected=umax*(S/(S+Ks))
+  
+  nll=-sum(dnorm(x=u,mean=expected,sd=sigma,log=TRUE))
+  return(nll)
+}
+
+# Initial Guess
+
+initialGuess=c(1,1,1)
+
+# Assess max likelihood of model parameters
+
+fit=optim(par=initialGuess,fn=nllike,S=data$S,u=data$u)
+print(fit)
+
+#__________________________________________________________
 
 #Question 3
 
@@ -64,6 +93,12 @@ nllnull <- function(p,d){
 initialGuess <- c(500,1)
 null <- optim(par=initialGuess,fn=nllnull,d=decomp$decomp)
 null
+
+
+
+
+
+
 
 #Humpshaped model
 nllhump <- function(p,Ms,d){
