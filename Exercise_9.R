@@ -1,20 +1,38 @@
 #Question 1
 
+library(ggplot2)
+
+ggplot(data)+
+  geom_point(aes(x=mutation, y=ponzr1Counts))
+
+ggplot(data)+
+  geom_boxplot(aes(x=mutation, y=ponzr1Counts))
+
 data <- read.csv("/Users/elizabethfortin12/Documents/ND First Year/Biocomputing/R_Programming/Exercise_9/ponzr1.csv")
 
-data$WTorNOT <- 0
-
+# adding a column for mutated = 1, wt = 0
 for (i in 1:nrow(data)){
-  if (data[i,1] == "WT"){
-    data$WTorNOT[i] <- 0
+  if (data$mutation[i] == 'WT'){
+    data$mutorno[i] <- 0
   }
   else{
-    data$WTorNOT[i] <- 1
+    data$mutorno[i] <- 1
   }
 }
 
+# data frames containing only one mutation
+m124k <- data[data$mutation=='WT',]
+m124k[11:20,] <- data[data$mutation=='M124K',]
+v456d <- data[data$mutation=='WT',]
+v456d[11:20,] <- data[data$mutation=='V456D',]
+i213n <- data[data$mutation=='WT',]
+i213n[11:20,] <- data[data$mutation=='I213N',]
+
+results <- matrix(0,3,3)
+colnames(results) <- c("null", "linear", "chisq")
+
 #Null model
-nll1 <- function(p,y){
+nllnull <- function(p,y){
   B0=p[1]
   sig=exp(p[2])
   expected=B0
@@ -22,12 +40,8 @@ nll1 <- function(p,y){
   return(nll)
 }
 
-initialGuess <- c(2000,1)
-fit <- optim(par=initialGuess,fn=nll1,y=data$ponzr1Counts)
-fit
-
 #Linear Model
-nll2 <- function(p,x,y){
+nlllinear <- function(p,x,y){
   B0=p[1]
   B1=p[2]
   sig=exp(p[3])
@@ -36,14 +50,43 @@ nll2 <- function(p,x,y){
   return(nll)
 }
 
-initialGuess <- c(1,1,1)
-fit2 <- optim(par=initialGuess,fn=nll2,x=data$WTorNOT,y=data$ponzr1Counts)
-fit2
+#Null model M124K
+initialGuess <- c(2000,10)
+fit <- optim(par=initialGuess,fn=nllnull,y=m124k$ponzr1Counts)
+results[1,1] <- fit$value
+
+#Linear model M124K
+initialGuess <- c(2000,-1000,10)
+fit <- optim(par=initialGuess,fn=nlllinear,x=m124k$mutorno,y=m124k$ponzr1Counts)
+results[1,2] <- fit$value
+
+#Null model V456D
+initialGuess <- c(2000,10)
+fit <- optim(par=initialGuess,fn=nllnull,y=v456d$ponzr1Counts)
+results[2,1] <- fit$value
+
+#Linear Model V456D
+initialGuess <- c(2000,-1000,10)
+fit <- optim(par=initialGuess,fn=nlllinear,x=v456d$mutorno,y=v456d$ponzr1Counts)
+results[2,2] <- fit$value
+
+#Null model i213n
+initialGuess <- c(2000,10)
+fit <- optim(par=initialGuess,fn=nllnull,y=i213n$ponzr1Counts)
+results[3,1] <- fit$value
+
+#Linear Model i213n
+initialGuess <- c(2000,-1000,10)
+fit <- optim(par=initialGuess,fn=nlllinear,x=i213n$mutorno,y=i213n$ponzr1Counts)
+results[3,2] <- fit$value
 
 #likelihood ratio test
-D<-2*(fit2$value - fit$value)
-ratiotest <- pchisq(q=D, df=1, lower.tail=FALSE)
-ratiotest
+A <- 2*(results[1,1]-results[1,2])
+B <- 2*(results[2,1]-results[2,2])
+C <- 2*(results[3,1]-results[3,2])
+results[1,3] <- pchisq(q=A, df=1, lower.tail=FALSE) 
+results[2,3] <- pchisq(q=B, df=1, lower.tail=FALSE) 
+results[3,3] <- pchisq(q=C, df=1, lower.tail=FALSE) 
 
 #__________________________________________________________
 
@@ -51,7 +94,7 @@ ratiotest
 
 # Load Data
 
-data=read.csv("/Users/chelseaweibel/Desktop/Biocomputing/R.data/Biocomputing Exercise 9.Use/MmarinumGrowth.csv")
+data1=read.csv("/Users/chelseaweibel/Desktop/Biocomputing/R.data/Biocomputing Exercise 9.Use/MmarinumGrowth.csv")
 
 # Custom Function
 
@@ -72,8 +115,8 @@ initialGuess=c(1,1,1)
 
 # Assess max likelihood of model parameters
 
-fit=optim(par=initialGuess,fn=nllike,S=data$S,u=data$u)
-print(fit)
+fit3=optim(par=initialGuess,fn=nllike,S=data1$S,u=data1$u)
+print(fit3)
 
 #__________________________________________________________
 
@@ -129,6 +172,14 @@ hump <- optim(par=initialGuess,fn=nllhump,Ms=decomp$Ms,d=decomp$decomp)
 hump
 
 #likelihood ratio test
+F<-2*(fit_linear$value-null$value)
+ratiotest3 <- pchisq(q=F, df=1, lower.tail=FALSE)
+ratiotest3
+
+G<-2*(hump$value-fit_linear$value)
+ratiotest4 <- pchisq(q=G, df=1, lower.tail=FALSE)
+ratiotest4
+
 E<-2*(hump$value-null$value)
 ratiotest2 <- pchisq(q=E, df=2, lower.tail=FALSE)
 ratiotest2
