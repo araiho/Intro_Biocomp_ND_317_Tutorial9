@@ -4,25 +4,26 @@
 setwd("~/Desktop/data-shell/Exercise9/Intro_Biocomp_ND_317_Tutorial9/")
 M <- read.csv("MmarinumGrowth.csv", header=TRUE)
 
+#Look at the plot to check it's shape. It is an exponetial growth curve.
+plot(M$S, M$u, xlab = "Concentration", ylab = "Growth Rate")
+
 #Custom Function
-nllike <- function(p,x,y){
+nllike <- function(p,S,y){
   umax=p[1]
-  S=p[2]
-  Ka=p[3]
-  sigma=exp(p[4])
+  Ks=p[2]
+  sigma=exp(p[3])
   
-  expected=umax*(S/(S+Ka))
+  expected=umax*(S/(S+Ks))
     
   
-  nll <- -sum(dnorm(0,mean=expected,sd=sigma,log=TRUE))
+  nll <- -sum(dnorm(M$u,mean=expected,sd=sigma,log=TRUE))
   return(nll)
 }
 
-###expected=umax(S/(S+Ka))   p[1]*(p[2]/(p[2]+p[3]))
 
 #Estimate parameters by minimizing the negative log likihood.
-intialGuess <- c(0.5,0.5,40,0.001)
-fit <- optim(par=intialGuess,fn=nllike,x=M$x,y=M$y)
+intialGuess <- c(100,10,0)
+fit <- optim(par=intialGuess,fn=nllike,S=M$S,y=M$u)
 
 print(fit)
 
