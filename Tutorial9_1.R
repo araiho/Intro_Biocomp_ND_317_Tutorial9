@@ -113,10 +113,8 @@ leafs= read.csv("leafDecomp.csv", header = TRUE)
 #create custom functions for the three models:
 #constant fit model(null model)
 constant = function(p,x,y){
-  B0=p[1]
-  B1=p[2]
-  B2=p[3]
-  sigma = exp(p[4])
+  B0=p[2]
+  sigma = exp(p[1])
   expected = B0
 
 nll = -sum(dnorm(x=y, mean=expected, sd=sigma, log=TRUE))
@@ -125,10 +123,10 @@ return(nll)
 
 #linear model
 linear = function(p,x,y){
-  B0=p[1]
-  B1=p[2]
-  B2=p[3]
-  sigma = exp(p[4])
+  B0=p[2]
+  B1=p[3]
+
+  sigma = exp(p[1])
   expected = B0 + B1*x
   
   nll = -sum(dnorm(x=y, mean=expected, sd=sigma, log=TRUE))
@@ -137,10 +135,10 @@ linear = function(p,x,y){
 
 #quadratic model
 quadratic = function(p,x,y){
-  B0=p[1]
-  B1=p[2]
-  B2=p[3]
-  sigma = exp(p[4])
+  B0=p[2]
+  B1=p[3]
+  B2=p[4]
+  sigma = exp(p[1])
   expected = B0 + B1*x + B2*x*x
   
   nll = -sum(dnorm(x=y, mean=expected, sd=sigma, log=TRUE))
@@ -150,16 +148,22 @@ quadratic = function(p,x,y){
 #want to minimize parameters so we find max
 #likelihood to capture shape but with as few parameters
 #start with initial guess
-initialguess = c(1,1,1,1)
+constantguess = c(1,1)
+linearguess = c(1,1,1)
+quadraticguess = c(1,1,1,1)
 
 #optimize each likelihood function with different number of parameters
-constantOpt=optim(initialguess, constant, x=leafs$Ms, y=leafs$decomp)
-linearOpt=optim(initialguess, linear, x=leafs$Ms, y=leafs$decomp)
-quadraticOpt=optim(initialguess, quadratic, x=leafs$Ms, y=leafs$decomp)
+constantOpt=optim(constantguess, constant, x=leafs$Ms, y=leafs$decomp)
+linearOpt=optim(linearguess, linear, x=leafs$Ms, y=leafs$decomp)
+quadraticOpt=optim(quadraticguess, quadratic, x=leafs$Ms, y=leafs$decomp)
 
 print(constantOpt)
 print(linearOpt)
 print(quadraticOpt)
+
+constantOpt$value
+linearOpt$value
+quadraticOpt$value
 
 #do t-tests on all combinations of min NLL for 3 models:
 D1_2 = 2*(constantOpt$value-linearOpt$value)
