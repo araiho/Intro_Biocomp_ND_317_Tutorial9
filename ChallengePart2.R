@@ -1,7 +1,7 @@
 #Pseudo-Code
 
 #1) Load Data
-#
+#           
 #2) custom function(params, observation)
 # - unpack parameters
 # - assign parameters to expected values
