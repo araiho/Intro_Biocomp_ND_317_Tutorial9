@@ -113,9 +113,10 @@ leafs= read.csv("leafDecomp.csv", header = TRUE)
 #create custom functions for the three models:
 #constant fit model(null model)
 constant = function(p,x,y){
-  B0=p[2]
   sigma = exp(p[1])
-  expected = B0
+  a=p[2]
+  
+  expected = a
 
 nll = -sum(dnorm(x=y, mean=expected, sd=sigma, log=TRUE))
 return(nll)
@@ -123,11 +124,11 @@ return(nll)
 
 #linear model
 linear = function(p,x,y){
-  B0=p[2]
-  B1=p[3]
-
-  sigma = exp(p[1])
-  expected = B0 + B1*x
+  sigma = exp(p[1]) 
+  a=p[2]
+  b=p[3]
+ 
+  expected = a + b*x
   
   nll = -sum(dnorm(x=y, mean=expected, sd=sigma, log=TRUE))
   return(nll)
@@ -135,11 +136,12 @@ linear = function(p,x,y){
 
 #quadratic model
 quadratic = function(p,x,y){
-  B0=p[2]
-  B1=p[3]
-  B2=p[4]
   sigma = exp(p[1])
-  expected = B0 + B1*x + B2*x*x
+  a=p[2]
+  b=p[3]
+  c=p[4]
+  
+  expected = a + b*x + c*x*x
   
   nll = -sum(dnorm(x=y, mean=expected, sd=sigma, log=TRUE))
   return(nll)
