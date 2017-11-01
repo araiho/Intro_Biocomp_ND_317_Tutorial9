@@ -18,3 +18,7 @@ nllike<-function(p,x,y){
 initialGuess=c(1,1,1,1)
 fit=optim(par=initialGuess,fn=nllike,x=d,y=Ms)
 print(fit)
+value1=10723.22
+value2=96.4776
+v=value1-value2
+p=0
