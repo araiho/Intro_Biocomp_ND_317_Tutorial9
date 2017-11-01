@@ -155,10 +155,15 @@ quadratic <- function(p,x,y){
 
 #want to minimize parameters so we find max
 #likelihood to capture shape but with as few parameters
-#start with initial guess which gives the correct number of parameters
-constantGuess = c(1,1)
-linearGuess = c(1,1,1)
-quadraticGuess = c(1,1,1,1)
+#estimate parameters for each of the three likelihood functions
+#use mean of all decomposition values to set initial parameter guess for the constant model
+mean(leafDecomp$decomp)
+constantGuess = c(1,500)
+#use slope and intercept of data to inform initial guess for linear model
+plot(leafDecomp)
+linearGuess = c(1,200,10)
+#difficult to have initial guess, try B0=200, B1=10, B2=-0.2, sigma=1
+quadraticGuess = c(1,200,10,-0.2)
 
 #optimize each likelihood function with different number of parameters
 constantResult=optim(constantGuess, constant, x=leafDecomp$Ms, y=leafDecomp$decomp)
@@ -176,7 +181,7 @@ quadraticResult$par
 #do t-tests on all combinations of min NLL for 3 models:
 D1_2 = 2*(constantResult$value - linearResult$value)
 D1_3 = 2*(constantResult$value - quadraticResult$value)
-D2_3 = 2*(quadraticResult$value - linearResult$value)
+D2_3 = 2*(linearResult$value - quadraticResult$value)
 
 #set df to 1 or 2 depending on difference in parameters between two models
 pchisq(D1_2, df=1, lower.tail=F)
@@ -184,8 +189,7 @@ pchisq(D1_3, df=2, lower.tail=F)
 pchisq(D2_3, df=1, lower.tail=F)
 
 #p-values for likelihood ratio tests are all about 0
-#contant fit B0=589.7, sigma=164
+#constant fit B0=589.7, sigma=164
 #linear fit B0=318, B1=6.3, sigma=54
-#quadratic fit B0=180, B1=15.7, B2=-0.11, signma=10.7
-
-##quadratic model is the best, linear model is second best, null model is the worst
+#quadratic fit B0=180, B1=15.7, B2=-0.11, sigma=10.7
+##therefore, quadratic model is the best since it has the smallest sigma, linear model is second best, null model is the worst
