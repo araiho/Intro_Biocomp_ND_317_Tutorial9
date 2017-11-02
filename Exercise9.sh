@@ -1,3 +1,83 @@
+## Set working directory
+setwd("C:/Users/Michelle Wang/Desktop/BIOS 60318/Intro_Biocomp_ND_317_Tutorial9")
+
+##------------##
+## Question 1 ##
+##------------##
+
+# Load Data
+data1 = read.csv(file = "ponzr1.csv", header = TRUE)
+
+# Create null function with parameters
+nullnllike <- function(p,x,y){
+  B0 = p[1]
+  sig = exp(p[2])
+  
+  expected = B0
+  
+  nullnll = -sum(dnorm(x=y, mean = expected, sd = sig, log = TRUE))
+  return(nullnll)
+}
+
+# Create mutation function with parameters
+mutnllike <- function(p,x,y){
+  B0 = p[1]
+  B1 = p[2]
+  sig = exp(p[3])
+  
+  expected = B0 + B1*x
+  
+  mutnll = -sum(dnorm(x=y, mean = expected, sd = sig, log = TRUE))
+  return(mutnll)
+}
+
+# Determine Null Hypothesis
+initialnull = c(1,1,1,1,1,1,1,1,1,1)
+null = data.frame(initialnull, data1[1:10,2])
+colnames(null) = c("mutation", "ponzr1Counts")
+nullguess = c(1,1)
+fitnull = optim(par=nullguess, fn = nullnllike, x = null$mutation, y = null$ponzr1Counts)
+print(fitnull)
+
+# Determine Wt vs M124K fit
+initialM124K = c(0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1)
+M124K = data.frame(initialM124K, data1[1:20, 2])
+colnames(M124K) = c("mutation", "ponzr1Counts")
+initialguess = c(1,1,1)
+fitM124K= optim(par=initialguess, fn=mutnllike, x=M124K$mutation, y=M124K$ponzr1Counts)
+print(fitM124K)
+
+D = 2*(fitnull$value-fitM124K$value)
+pchisq(D, df = 1, lower.tail = FALSE)
+
+print(fitnull$value)
+print(fitM124K$value)
+  
+# Determintea WT vs V456D fit
+initialV456D = c(0,0,0,0,0,0,0,0,0,0)
+v456D = data.frame(initialV456D, data1[1:10, 2])
+V456D = data.frame(c(1,1,1,1,1,1,1,1,1,1), data1[21:30, 2]
+colnames(V456D) = c("mutation", "ponzr1Counts")
+fitV456D = optim(par=initialguess, fn=mutnllike, x=M124K$mutation, y=M124K$ponzr1Counts)
+print(fitV456D)
+
+D = 2*(fitnull$value-fitM124K$value)
+pchisq(D, df = 1, lower.tail = FALSE)
+
+print(fitnull$value)
+print(fitM124K$value)
+V456D = data.frame(initial, data1[["WT" "V456D", 2])
+colnames(M124K) = c("mutation", "ponzr1Counts")
+
+initialguess = c(1,1,1)
+
+fit= optim(par=initialguess, fn=nllike, x=M124K$mutation, y=M124K$ponzr1Counts)
+
+print(fit)
+
+
+
+
 ###Exercise9_Question2###
 
 #Load data
