@@ -46,3 +46,12 @@ LinFit=optim(LinGuess, LinNllike, x=data$Ms, y=data$decomp)
 
 QuadGuess=c(180,15.7,-0.11,10.7)
 QuadFit=optim(QuadGuess, QuadNllike, x=data$Ms, y=data$decomp)
+
+DLinNull=-2*(LinFit$value-NullFit$value)
+pLinNull=pchisq(q=DLinNull, df=1, lower.tail=FALSE)
+
+DQuadLin = 2*(LinFit$value-QuadFit$value)
+pQuadLin=pchisq(q=DQuadLin, df=1, lower.tail=FALSE)
+
+DQuadNull = -2*(QuadFit$value - NullFit$value)
+pQuadNull=pchisq(q=DQuadNull,df=2,lower.tail=FALSE)
