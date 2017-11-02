@@ -1,6 +1,3 @@
-## Set working directory
-setwd("C:/Users/Michelle Wang/Desktop/BIOS 60318/Intro_Biocomp_ND_317_Tutorial9")
-
 ##------------##
 ## Question 1 ##
 ##------------##
@@ -54,29 +51,26 @@ print(fitnull$value)
 print(fitM124K$value)
   
 # Determintea WT vs V456D fit
-initialV456D = c(0,0,0,0,0,0,0,0,0,0)
-v456D = data.frame(initialV456D, data1[1:10, 2])
-V456D = data.frame(c(1,1,1,1,1,1,1,1,1,1), data1[21:30, 2]
+initialV456D = c(0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1)
+V456D = data.frame(t(rbind(initialV456D, data1[c(1:10,21:30), 2])))
 colnames(V456D) = c("mutation", "ponzr1Counts")
-fitV456D = optim(par=initialguess, fn=mutnllike, x=M124K$mutation, y=M124K$ponzr1Counts)
+initialguess = c(1,1,1)
+fitV456D= optim(par=initialguess, fn=mutnllike, x=V456D$mutation, y=V456D$ponzr1Counts)
 print(fitV456D)
 
-D = 2*(fitnull$value-fitM124K$value)
+D = 2*(fitnull$value-fitV456D$value)
 pchisq(D, df = 1, lower.tail = FALSE)
 
-print(fitnull$value)
-print(fitM124K$value)
-V456D = data.frame(initial, data1[["WT" "V456D", 2])
-colnames(M124K) = c("mutation", "ponzr1Counts")
-
+# Determintea WT vs V456D fit
+initialI213N = c(0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1)
+I213N = data.frame(t(rbind(initialI213N, data1[c(1:10,31:40), 2])))
+colnames(I213N) = c("mutation", "ponzr1Counts")
 initialguess = c(1,1,1)
+fitI213N= optim(par=initialguess, fn=mutnllike, x=I213N$mutation, y=I213N$ponzr1Counts)
+print(fitI213N)
 
-fit= optim(par=initialguess, fn=nllike, x=M124K$mutation, y=M124K$ponzr1Counts)
-
-print(fit)
-
-
-
+D = 2*(fitnull$value-fitI213N$value)
+pchisq(D, df = 1, lower.tail = FALSE)
 
 ###Exercise9_Question2###
 
