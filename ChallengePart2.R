@@ -16,7 +16,7 @@
 
 #Loading Data
 data = read.csv(file = "MmarinumGrowth.csv", header = TRUE, sep = ",")
-
+#Defining set
 s=data[,1]
 u=data[,2]
 
