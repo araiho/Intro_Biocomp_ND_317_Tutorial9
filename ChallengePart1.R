@@ -44,7 +44,7 @@ Guess=c(2000,-1000,10)
 Fit=optim(Guess, nllike, x=subset1$mutation, y=subset1$ponzr1Counts)
 NullFit=optim(NullGuess, Nullnllike, y=subset1$ponzr1Counts)
 A = 0.007*(Fit$value-NullFit$value)
-M124Kp=pchisq(q=A, df=1, lower.tail=F)
+M124Kp=pchisq(q=A, df=1, lower.tail=FALSE)
 
 #Testing V456D
 Fit=optim(Guess, nllike, x=subset2$mutation, y=subset2$ponzr1Counts)
