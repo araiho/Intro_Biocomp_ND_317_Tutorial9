@@ -1,15 +1,15 @@
 #Load and and subset data
 
-ponData=read.csv(ponzr1.csv)
+ponData=read.csv("ponzr1.csv", stringsAsFactors = FALSE)
 
-subsetI231N=data[data$mutation%in%c('WT','I231N'),]
-subsetM124K=data[data$mutation%in%c('WT','M124K'),]
-subsetV456D=data[data$mutation%in%c('WT','V456D'),]
+subsetI231N=ponData[ponData$mutation%in%c('WT','I231N'),]
+subsetM124K=ponData[ponData$mutation%in%c('WT','M124K'),]
+subsetV456D=ponData[ponData$mutation%in%c('WT','V456D'),]
 
 #Replace WT entries with 0 and mutant with 1
 
 for(i in subsetI231N[,1]){
-  if (subsetI231N[i,1]=='WT'){
+  if ('WT' %in% subsetI231N[i,1]){
     subsetI231N[i,1]=0
   } else{
     subsetI231N[i,1]=1
@@ -17,7 +17,7 @@ for(i in subsetI231N[,1]){
 }
 
 for(i in subsetV456D[,1]){
-  if (subsetV456D[i,1]=='WT'){
+  if ('WT' %in% subsetV456D[i,1]){
     subsetV456D[i,1]=0
   } else{
     subsetV456D[i,1]=1
@@ -25,7 +25,7 @@ for(i in subsetV456D[,1]){
 }
 
 for(i in subsetM124K[,1]){
-  if (subsetM124K[i,1]=='WT'){
+  if ('WT' %in% subsetM124K[i,1]){
     subsetM124K[i,1]=0
   } else{
     subsetM124K[i,1]=1
@@ -63,11 +63,12 @@ nlllikeNull=function(p,x,y){
 #Note that when eveluating null model, use B0, but when evaluating
 #linear model, use BWT for the "B0" in the function scipt
 
-BWT=mean[ponData$mutation%in%c('WT'),]
+BWT=mean(ponData$mutation%in% 'WT')
 B0=mean(ponData[,2])
-B1=(mean[ponData$mutation%in%c('M124K'),])-(mean[ponData$mutation%in%c('WT'),])
-B2=(mean[ponData$mutation%in%c('V456D'),])-(mean[ponData$mutation%in%c('WT'),])
-B3=(mean[ponData$mutation%in%c('I213N'),])-(mean[ponData$mutation%in%c('WT'),])
+B1=(mean(ponData[ponData$mutation%in%'M124K',]))-(mean(ponData[ponData$mutation%in%'WT',]))
+B2=(mean(ponData[ponData$mutation%in%'V456D',]))-(mean(ponData[ponData$mutation%in%'WT',]))
+B3=(mean(ponData[ponData$mutation%in%'I213N',]))-(mean(ponData[ponData$mutation%in%'WT',]))
+                                  
 
 #M124K
 
