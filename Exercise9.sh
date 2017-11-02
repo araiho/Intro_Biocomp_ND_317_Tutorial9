@@ -108,9 +108,6 @@ fit <- optim(par=intialGuess,fn=nllike,S=M$S,y=M$u)
 print(fit)
 
 
-
-
-
 ###Exercise9_Question3###
 
 setwd("~/Desktop/data-shell/Exercise9/Intro_Biocomp_ND_317_Tutorial9/")
@@ -119,25 +116,25 @@ L <- read.csv("leafDecomp.csv", header=TRUE)
 #Look at the plot to check it's shape. It is an exponetial growth curve.
 plot(L$Ms, L$decomp, xlab = "Soil Moisture", ylab = "Decomposition Rate")
 
-#Custom Function 1: Constant Rate (d = a)
+#Custom Function 1: Constant Rate (y = Bo)
 nllike1 <- function(p,x,y){
   Bo=p[1]
   sigma=exp(p[2])
   
   expected=Bo
   
-  nll1 <- -sum(dnorm(x=0,mean=expected,sd=sigma,log=TRUE))
+  nll1 <- -sum(dnorm(x=y,mean=expected,sd=sigma,log=TRUE))
   return(nll1)
 }
 
 #Estimate parameters by minimizing the negative log likihood.
-intialGuess <- c(475,1)
+intialGuess <- c(590,1)
 fit1 <- optim(par=intialGuess,fn=nllike1,x=L$Ms,y=L$decomp)
 
 print(fit1)
 
 
-#Custom Function 2: Linear Rate (d = a + bMs)
+#Custom Function 2: Linear Rate (y = Bo + B1*x)
 nllike2 <- function(p,x,y){
   Bo=p[1]
   B1=p[2]
@@ -150,12 +147,12 @@ nllike2 <- function(p,x,y){
 }
 
 #Estimate parameters by minimizing the negative log likihood.
-intialGuess <- c(100,200,1)
+intialGuess <- c(200,10,1)
 fit2 <- optim(par=intialGuess,fn=nllike2,x=L$Ms,y=L$decomp)
 
 print(fit2)
 
-#Custom Function 1: Quadratic (d = a + bMs + c(Ms)^2)
+#Custom Function 1: Quadratic (y = Bo + B1*x + B2*(x)^2)
 nllike3 <- function(p,x,y){
   Bo=p[1]
   B1=p[2]
@@ -164,7 +161,7 @@ nllike3 <- function(p,x,y){
   
   expected=Bo + B1*x + B2*x^2
   
-  nll3 <- -sum(dnorm(L$Ms,mean=expected,sd=sigma,log=TRUE))
+  nll3 <- -sum(dnorm(x=y,mean=expected,sd=sigma,log=TRUE))
   return(nll3)
 }
 
@@ -185,5 +182,7 @@ D <-2*(fit2$value-fit3$value)
 pchisq(q=D,df=1,lower.tail=FALSE)
 
 #Compare 1 vs 3
-H <-2*(fit2$value-fit3$value)
+H <-2*(fit1$value-fit3$value)
 pchisq(q=H,df=2,lower.tail=FALSE)
+
+####According to the chisquare results, we should use a humped shaped response of decomosition to soil moisture (quadratic equation).
