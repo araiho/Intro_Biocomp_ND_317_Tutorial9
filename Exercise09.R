@@ -23,40 +23,43 @@ library(ggplot2)
 
 ponData=read.csv("ponzr1.csv", stringsAsFactors = FALSE)
 
-subsetI231N=ponData[ponData$mutation%in%c('WT','I231N'),]
+subsetI231N=ponData[ponData$mutation%in%c('WT','I213N'),]
 subsetM124K=ponData[ponData$mutation%in%c('WT','M124K'),]
 subsetV456D=ponData[ponData$mutation%in%c('WT','V456D'),]
 
 #Replace WT entries with 0 and mutant with 1
 
-for(i in subsetI231N[,1]){
-  if ('WT' %in% subsetI231N[i,1]){
+for(i in 1:nrow(subsetI231N)) {
+  if (subsetI231N[i,1] == "WT"){
     subsetI231N[i,1]=0
-  } else{
+  } else {
     subsetI231N[i,1]=1
   }
 }
+subsetI231N[,1] <- as.numeric(subsetI231N[,1])
 
-for(i in subsetV456D[,1]){
-  if ('WT' %in% subsetV456D[i,1]){
+for(i in 1:nrow(subsetV456D)) {
+  if (subsetV456D[i,1] == "WT"){
     subsetV456D[i,1]=0
-  } else{
+  } else {
     subsetV456D[i,1]=1
   }
 }
+subsetV456D[,1] <- as.numeric(subsetV456D[,1])
 
-for(i in subsetM124K[,1]){
-  if ('WT' %in% subsetM124K[i,1]){
+for(i in 1:nrow(subsetM124K)) {
+  if (subsetM124K[i,1] == "WT"){
     subsetM124K[i,1]=0
-  } else{
+  } else {
     subsetM124K[i,1]=1
   }
 }
+subsetM124K[,1] <- as.numeric(subsetM124K[,1])
 
 #Custum negative log likelihood functions (null and with 
 #mutation effects)
 
-nlllike=function(p,x,y){
+nllike=function(p,x,y){
   B0=p[1]
   B1=p[2]
   sigma=exp(p[3])
@@ -67,7 +70,7 @@ nlllike=function(p,x,y){
   return(nll)
 }
 
-nlllikeNull=function(p,x,y){
+nllikeNull=function(p,x,y){
   B0=p[1]
   sigma=exp(p[2])
   
@@ -76,41 +79,32 @@ nlllikeNull=function(p,x,y){
   nll=-sum(dnorm(x=y, mean =mRNAcount, sd=sigma, log=TRUE))
   return(nll)
 }
-#Calculating parameters; BWT=Avg mRNA count across WT, 
-#B0=Avg mRNA Count across all fish, 
-#B1 = Diff in WT avg and M124K avg, B2 = " and V456D, B3 = "
-#and I213N
-#
-#Note that when eveluating null model, use B0, but when evaluating
-#linear model, use BWT for the "B0" in the function scipt
 
-BWT=mean(ponData$mutation%in% 'WT')
-B0=mean(ponData[,2])
-B1=(mean(ponData[ponData$mutation%in%'M124K',]))-(mean(ponData[ponData$mutation%in%'WT',]))
-B2=(mean(ponData[ponData$mutation%in%'V456D',]))-(mean(ponData[ponData$mutation%in%'WT',]))
-B3=(mean(ponData[ponData$mutation%in%'I213N',]))-(mean(ponData[ponData$mutation%in%'WT',]))
 
+B0 = 1
+B1 = 1
+BWT = 1
 
 #M124K
 
-fitNullM124K=optim(par=c(B0,1), fn=nllikeNull, y=subsetM124K[,2])
-fitLinearM124K=optim(par=c(BWT,B1,1), fn=nllike, x=subsetM124K[,1], y=subsetM124K[,2])
+fitNullM124K=optim(par=c(2000,10), fn=nllikeNull, y=subsetM124K[,2])
+fitLinearM124K=optim(par=c(2000,-1000,10), fn=nllike, x=subsetM124K[,1], y=subsetM124K[,2])
 
-pvalM124K=pchisq(q=(fitNullM124K-fitLinearM124K), df=1, lower.tail = FALSE)
+pvalM124K=pchisq(q=(fitLinearM124K$value-fitNullM124K$value), df=1, lower.tail = FALSE)
 
 #v456D
 
-fitNullv456D=optim(par=c(B0,1), fn=nllikeNull, y=subsetv456D[,2])
-fitLinearv456D=optim(par=c(BWT,B2,1), fn=nllike, x=subsetv456D[,1], y=subsetv456D[,2])
+fitNullV456D=optim(par=c(B0,1), fn=nllikeNull, y=subsetV456D[,2])
+fitLinearV456D=optim(par=c(BWT,B1,1), fn=nllike, x=subsetV456D[,1], y=subsetV456D[,2])
 
-pvalv456D=pchisq(q=(fitNullv456D-fitLinearv456D), df=1, lower.tail = FALSE)
+pvalv456D=pchisq(q=(fitLinearV456D$value-fitNullV456D$value), df=1, lower.tail = FALSE)
 
 #I213N
 
-fitNullI213N=optim(par=c(B0,1), fn=nllikeNull, y=subsetI213N[,2])
-fitLinearI213N=optim(par=c(BWT,B2,1), fn=nllike, x=subsetI213N[,1], y=subsetI213N[,2])
+fitNullI213N=optim(par=c(B0,1), fn=nllikeNull, y=subsetI231N[,2])
+fitLinearI213N=optim(par=c(BWT,B1,1), fn=nllike, x=subsetI231N[,1], y=subsetI231N[,2])
 
-pvalI213N=pchisq(q=(fitNullI213N-fitLinearI213N), df=1, lower.tail = FALSE)
+pvalI213N=pchisq(q=(fitLinearI213N$value-fitNullI213N$value), df=1, lower.tail = FALSE)
 
 #Presenting Results
 
