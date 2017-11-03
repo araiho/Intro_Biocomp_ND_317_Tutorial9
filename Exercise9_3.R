@@ -1,3 +1,8 @@
+#### Exercise 9 Question 3 ####
+## Upload Data ##
+leafDecomp <- read.csv("~/Desktop/data-shell/Intro_Biocomp_ND_317_Tutorial9/leafDecomp.csv",sep = ',',header=TRUE)
+View(Data)
+## Constant rate ##
 nnlike0 <- function(p,x,y){
   B0 = p[1]
   sigma = exp(p[2])
@@ -5,7 +10,7 @@ nnlike0 <- function(p,x,y){
   nll= -sum(dnorm(x=y, mean=expected, sd = sigma, log = TRUE))
   return(nll)
 }
-
+## Linear Response ##
 nnlike1 <- function(p,x,y){
   B0 = p[1]
   B1 = p[2]
@@ -14,6 +19,7 @@ nnlike1 <- function(p,x,y){
   nll1= -sum(dnorm(x=y, mean=expected, sd = sigma, log = TRUE))
   return(nll1)
 }
+## Hump-shape Response ##
 nnlike2 <- function(p,x,y){
   B0 = p[1]
   B1 = p[2]
