@@ -35,7 +35,7 @@ for(i in subsetM124K[,1]){
 #Custum negative log likelihood functions (null and with 
 #mutation effects)
 
-nlllike=function(p,x,y){
+nllike=function(p,x,y){
   B0=p[1]
   B1=p[2]
   sigma=exp(p[3])
@@ -46,7 +46,7 @@ nlllike=function(p,x,y){
   return(nll)
 }
 
-nlllikeNull=function(p,x,y){
+nllikeNull=function(p,x,y){
   B0=p[1]
   sigma=exp(p[2])
   
@@ -63,11 +63,11 @@ nlllikeNull=function(p,x,y){
 #Note that when eveluating null model, use B0, but when evaluating
 #linear model, use BWT for the "B0" in the function scipt
 
-BWT=mean(ponData$mutation%in% 'WT')
+BWT=mean(ponData[ponData$mutation%in% 'WT',2])
 B0=mean(ponData[,2])
-B1=(mean(ponData[ponData$mutation%in%'M124K',]))-(mean(ponData[ponData$mutation%in%'WT',]))
-B2=(mean(ponData[ponData$mutation%in%'V456D',]))-(mean(ponData[ponData$mutation%in%'WT',]))
-B3=(mean(ponData[ponData$mutation%in%'I213N',]))-(mean(ponData[ponData$mutation%in%'WT',]))
+B1=(mean(ponData[ponData$mutation %in% 'M124K',2]))-(mean(ponData[ponData$mutation%in%'WT',2]))
+B2=(mean(ponData[ponData$mutation %in% 'V456D',2]))-(mean(ponData[ponData$mutation%in%'WT',2]))
+B3=(mean(ponData[ponData$mutation %in% 'I213N',2]))-(mean(ponData[ponData$mutation%in%'WT',2]))
                                   
 
 #M124K
